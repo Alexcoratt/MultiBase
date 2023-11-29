@@ -1,0 +1,3 @@
+[submodule "modules/dynvalues"]
+	path = modules/dynvalues
+	url = https://github.com/Alexcoratt/DynValues

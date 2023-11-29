@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 project(DatasetProcessor)
 
-add_subdirectory(modules/DynValues)
+add_subdirectory(modules/dynvalues)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PUBLIC DynValues_lib)
+target_link_libraries(${PROJECT_NAME} PRIVATE DynValues_lib)
