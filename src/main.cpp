@@ -32,6 +32,7 @@ std::string getNextRow(std::ifstream & csvStream) {
 	return line;
 }
 
+// TODO: add shielding of commas inside quotes
 std::vector<std::string> split(std::string const & line, char delimiter = ' ') {
 	std::vector<std::string> res;
 	std::size_t left = 0;
@@ -50,21 +51,39 @@ std::vector<std::string> split(std::string const & line, char delimiter = ' ') {
 	return res;
 }
 
+template <typename T>
+constexpr void printVector(std::vector<T> const & values, char const * endline = "\n", std::ostream & out = std::cout) {
+	for (auto const & value : values)
+		out << value << endline;
+}
+
 int main(int argc, char ** argv) {
-	std::ifstream file(FILENAME);
-	std::string line = getNextRow(file);
 
-	std::size_t count = 0;
+	char const * filename = FILENAME;
+	if (argc > 1)
+		filename = argv[1];
+	else
+		std::cerr << "Filename is not entered\nUsing default filename: " << filename << std::endl;
 
-	while (!file.eof() && count++ < 5) {
-		std::cout << line << '\n';
-		auto parts = split(line, ',');
-		for (auto part : parts)
-			std::cout << '\"' << part << '\"' << '\n';
-		std::cout << '\n';
-
-		line = getNextRow(file);
+	std::ifstream file(filename);
+	if (!file.good()) {
+		std::cerr << "Error occured while opening file " << filename << std::endl;
+		return -1;
 	}
 
+	std::string line = getNextRow(file);
+	std::size_t count = 0;
+
+	while (!file.eof()) {
+		//std::cout << line << '\n';
+		auto parts = split(line, ',');
+
+		printVector(parts);
+
+		line = getNextRow(file);
+
+		if (count++ == 5)
+			break;
+	}
 	return 0;
 }
