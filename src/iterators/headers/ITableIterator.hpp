@@ -15,8 +15,9 @@ public:
 	virtual std::map<std::string, AutoValue> get() = 0;
 	virtual bool isEnd() = 0;
 
-	virtual void insertAfter(std::map<std::string, AutoValue> const &) = 0;
-	virtual void set(std::map<std::string, AutoValue> const &) = 0;
+	// inserts a row before current position
+	virtual void insert(std::map<std::string, AutoValue> const &) = 0;
+	virtual void update(std::map<std::string, AutoValue> const &) = 0;
 	virtual void remove() = 0;
 };
 

@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <stdexcept>
+#include <iostream>
 
 #include "BaseTable.hpp"
 
@@ -53,19 +55,75 @@ std::vector<std::string> BaseTable::getHeadings() const {
 std::size_t BaseTable::getWidth() const { return _width; }
 std::size_t BaseTable::getHeight() const { return _rows.size(); }
 
-std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) const {
-	auto count = index;
-	auto it = _rows.begin();
-	while (count && it != _rows.end())
-		++it;
-
-	std::map<std::string, AutoValue> res;
-	for (std::size_t i{0}; i < _width; ++i)
-		res[_headings[i]] = (*it)[i];
-
+template <typename KEY, typename VALUE>
+std::map<KEY, VALUE> arrToMap(KEY const * keys, VALUE const * values, std::size_t const & count) {
+	std::map<KEY, VALUE> res;
+	for (std::size_t i = 0; i < count; ++i)
+		res[keys[i]] = values[i];
 	return res;
 }
 
-void BaseTable::insertRow(std::map<std::string, AutoValue> )
+template <typename T>
+std::_List_iterator<T> getNthIter(std::list<T> & list, std::size_t const & index) {
+	auto count = index;
+	auto it = list.begin();
+	while (count)
+		++it;
+	return it;
+}
 
+template <typename T>
+std::_List_const_iterator<T> getNthIter(std::list<T> const & list, std::size_t const & index) {
+	auto count = index;
+	auto it = list.begin();
+	while (count)
+		++it;
+	return it;
+}
 
+std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) const {
+	std::size_t height = _rows.size();
+	if (index >= height)
+		throw std::out_of_range("BaseTable::getRow: index " + std::to_string(index) + " is out of height " + std::to_string(height));
+
+	auto count = index;
+	auto it = _rows.begin();
+	while (count)
+		++it;
+
+	return arrToMap(_headings, *getNthIter(_rows, index), _width);
+}
+
+template <typename KEY, typename VALUE>
+VALUE * mapToArr(VALUE * dest, KEY const * keys, std::size_t const & count, std::map<KEY, VALUE> const & map) {
+	for (std::size_t i = 0; i < count; ++i) {
+		try {
+			dest[i] = map.at(keys[i]);
+		} catch (std::out_of_range const & err) {
+			std::cerr << err.what() << "\nmapToArr: no such key \"" << keys[i] << "\" in the map" << std::endl;
+		}
+	}
+	return dest;
+}
+
+template <typename KEY, typename VALUE>
+VALUE * mapToArr(KEY const * keys, std::size_t const & count, std::map<KEY, VALUE> const & map) {
+	return mapToArr(new VALUE[count], keys, count, map);
+}
+
+void BaseTable::insertRow(std::map<std::string, AutoValue> const & row, const std::size_t & index) {
+	auto iter = getNthIter(_rows, index);
+	_rows.insert(iter, mapToArr(_headings, _width, row));
+}
+
+void BaseTable::appendRow(std::map<std::string, AutoValue> const & row) {
+	_rows.push_back(mapToArr(_headings, _width, row));
+}
+
+void BaseTable::updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) {
+	mapToArr(*getNthIter(_rows, index), _headings, _width, row);
+}
+
+void BaseTable::removeRow(std::size_t const & index) {
+	_rows.erase(getNthIter(_rows, index));
+}

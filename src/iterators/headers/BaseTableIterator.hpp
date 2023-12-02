@@ -6,16 +6,15 @@
 
 #include "ITableIterator.hpp"
 
-template <typename T>
 class BaseTableIterator : public ITableIterator {
 private:
-	std::list<T> & _rows;
-	std::_List_iterator<T> _listIterator;
+	std::list<AutoValue *> & _rows;
+	std::_List_iterator<AutoValue *> _listIterator;
 
 public:
-	BaseTableIterator(std::list<T> & rows);
-	BaseTableIterator(BaseTableIterator const & other);
-	BaseTableIterator & operator=(BaseTableIterator const & other);
+	BaseTableIterator(std::list<AutoValue *> & rows);
+	BaseTableIterator(BaseTableIterator & other);
+	BaseTableIterator & operator=(BaseTableIterator & other);
 	~BaseTableIterator() override;
 
 	void swap(BaseTableIterator & other);
@@ -25,7 +24,9 @@ public:
 	std::map<std::string, AutoValue> get() override;
 	bool isEnd() override;
 
-	virtual void insertAfter(std::map<std::string, AutoValue> const & row) override;
+	void insert(std::map<std::string, AutoValue> const & row) override;
+	void update(std::map<std::string, AutoValue> const &) override;
+	void remove() override;
 };
 
 #endif

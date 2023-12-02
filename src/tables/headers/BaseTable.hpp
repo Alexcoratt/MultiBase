@@ -18,6 +18,8 @@ public:
 	BaseTable & operator=(BaseTable const &);
 	~BaseTable();
 
+	void swap(BaseTable & other);
+
 	std::vector<std::string> getHeadings() const override;
 	std::size_t getWidth() const override;
 	std::size_t getHeight() const override;
@@ -28,7 +30,7 @@ public:
 	void updateRow(const std::map<std::string, AutoValue> &row, const std::size_t &index) override;
 	void removeRow(const std::size_t &index) override;
 
-	BaseTableIterator<AutoValue *> * getIterator() override;
+	BaseTableIterator * getIterator() override;
 };
 
 #endif
