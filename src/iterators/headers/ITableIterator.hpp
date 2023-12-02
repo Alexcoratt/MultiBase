@@ -8,6 +8,8 @@
 
 class ITableIterator {
 public:
+	virtual ~ITableIterator() {}
+
 	virtual void first() = 0;
 	virtual void next() = 0;
 	virtual std::map<std::string, AutoValue> get() = 0;

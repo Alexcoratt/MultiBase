@@ -11,6 +11,8 @@
 
 class ITable {
 public:
+	virtual ~ITable() {}
+
 	virtual std::vector<std::string> getHeadings() const = 0;
 	virtual std::size_t getWidth() const = 0;
 	virtual std::size_t getHeight() const = 0;
