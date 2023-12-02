@@ -3,3 +3,6 @@
 
 # built files
 build*
+
+# temporary drawio files
+*.$*
