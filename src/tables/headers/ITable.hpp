@@ -23,7 +23,9 @@ public:
 	virtual void updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) = 0;
 	virtual void removeRow(std::size_t const & index) = 0;
 
-	virtual std::shared_ptr<ITableIterator> getIterator() = 0;
+	// returns a pointer to a new ITableIterator
+	// so a client has to delete it manually
+	virtual ITableIterator * getIterator() = 0;
 };
 
 #endif

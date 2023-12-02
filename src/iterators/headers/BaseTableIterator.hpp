@@ -4,21 +4,16 @@
 #include <list>
 #include <iterator>
 
-#include <AutoValue.hpp>
-
 #include "ITableIterator.hpp"
 
-class BaseTableIterator;
-
-#include "BaseTable.hpp"
-
+template <typename T>
 class BaseTableIterator : public ITableIterator {
 private:
-	BaseTable * _table;
-	std::_List_iterator<AutoValue *> _listIterator;
+	std::list<T> & _rows;
+	std::_List_iterator<T> _listIterator;
 
 public:
-	BaseTableIterator(BaseTable * table);
+	BaseTableIterator(std::list<T> & rows);
 	BaseTableIterator(BaseTableIterator const & other);
 	BaseTableIterator & operator=(BaseTableIterator const & other);
 	~BaseTableIterator() override;

@@ -4,10 +4,9 @@
 #include <list>
 
 #include "ITable.hpp"
+#include "BaseTableIterator.hpp"
 
 class BaseTable : public ITable {
-friend class BaseTableIterator;
-
 private:
 	std::size_t _width;
 	std::string * _headings;
@@ -29,9 +28,7 @@ public:
 	void updateRow(const std::map<std::string, AutoValue> &row, const std::size_t &index) override;
 	void removeRow(const std::size_t &index) override;
 
-	std::shared_ptr<ITableIterator> getIterator() override;
+	BaseTableIterator<AutoValue *> * getIterator() override;
 };
-
-#include "BaseTableIterator.hpp"
 
 #endif
