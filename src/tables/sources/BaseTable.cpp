@@ -74,6 +74,10 @@ std::_List_iterator<T> getNthIter(std::list<T> & list, std::size_t const & index
 
 template <typename T>
 std::_List_const_iterator<T> getNthIter(std::list<T> const & list, std::size_t const & index) {
+	std::size_t height = list.size();
+	if (index >= height)
+		throw std::out_of_range("BaseTable::getRow: index " + std::to_string(index) + " is out of height " + std::to_string(height));
+
 	auto count = index;
 	auto it = list.begin();
 	while (count)
@@ -82,16 +86,18 @@ std::_List_const_iterator<T> getNthIter(std::list<T> const & list, std::size_t c
 }
 
 std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) const {
-	std::size_t height = _rows.size();
-	if (index >= height)
-		throw std::out_of_range("BaseTable::getRow: index " + std::to_string(index) + " is out of height " + std::to_string(height));
-
 	auto count = index;
 	auto it = _rows.begin();
 	while (count)
 		++it;
 
 	return arrToMap(_headings, *getNthIter(_rows, index), _width);
+}
+
+std::map<std::string, AutoValue> BaseTable::getRow(std::list<AutoValue *>::iterator & iter) const {
+	if (iter == _rows.end())
+		throw std::out_of_range("BaseTable::getRow: iterator is out of range");
+	return arrToMap(_headings, *iter, _width);
 }
 
 template <typename KEY, typename VALUE>
@@ -116,6 +122,10 @@ void BaseTable::insertRow(std::map<std::string, AutoValue> const & row, const st
 	_rows.insert(iter, mapToArr(_headings, _width, row));
 }
 
+void BaseTable::insertRow(std::map<std::string, AutoValue> const & row, std::list<AutoValue *>::iterator & iter) {
+	_rows.insert(iter, mapToArr(_headings, _width, row));
+}
+
 void BaseTable::appendRow(std::map<std::string, AutoValue> const & row) {
 	_rows.push_back(mapToArr(_headings, _width, row));
 }
@@ -124,6 +134,18 @@ void BaseTable::updateRow(std::map<std::string, AutoValue> const & row, std::siz
 	mapToArr(*getNthIter(_rows, index), _headings, _width, row);
 }
 
-void BaseTable::removeRow(std::size_t const & index) {
-	_rows.erase(getNthIter(_rows, index));
+void BaseTable::updateRow(std::map<std::string, AutoValue> const & row, std::list<AutoValue *>::iterator & iter) {
+	if (iter == _rows.end())
+		throw std::out_of_range("BaseTable::updateRow: iterator is out of range");
+	mapToArr(*iter, _headings, _width, row);
 }
+
+void BaseTable::removeRow(std::size_t const & index) { _rows.erase(getNthIter(_rows, index)); }
+
+void BaseTable::removeRow(std::list<AutoValue *>::iterator & iter) {
+	if (iter == _rows.end())
+		throw std::out_of_range("BaseTable::removeRow: iterator is out of range");
+	_rows.erase(iter);
+}
+
+BaseTableIterator * BaseTable::getIterator() { return new BaseTableIterator(this); }

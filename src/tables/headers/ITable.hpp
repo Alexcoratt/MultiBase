@@ -19,7 +19,7 @@ public:
 
 	virtual std::map<std::string, AutoValue> getRow(std::size_t const & index) const = 0;
 	virtual void insertRow(std::map<std::string, AutoValue> const & row, std::size_t const & index = 0) = 0;
-	virtual void appendRow(std::map<std::string, AutoValue> const & row);
+	virtual void appendRow(std::map<std::string, AutoValue> const & row) = 0;
 	virtual void updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) = 0;
 	virtual void removeRow(std::size_t const & index) = 0;
 
