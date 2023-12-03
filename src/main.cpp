@@ -17,6 +17,13 @@ constexpr void printMap(std::map<KEY, VALUE> const & map) {
 	std::cout << std::endl;
 }
 
+template <typename T>
+constexpr void printRow(std::vector<T> const & row) {
+	for (T const & value : row)
+		std::cout << value << '\t';
+	std::cout << std::endl;
+}
+
 std::vector<std::map<std::string, AutoValue>> const people = {
 	{
 		{"id", 0},
@@ -35,6 +42,23 @@ std::vector<std::map<std::string, AutoValue>> const people = {
 	}
 };
 
+void printTable(ITable * table) {
+	auto headings = table->getHeadings();
+	printRow(headings);
+
+	auto iter = table->getIterator();
+	while (!iter->isEnd()) {
+		auto row = iter->get();
+		for (auto const & heading : headings)
+			std::cout << row.at(heading) << '\t';
+		std::cout << std::endl;
+
+		iter->next();
+	}
+	delete iter;
+	std::cout << std::endl;
+}
+
 int main(int argc, char ** argv) {
 	BaseTable table({ "id", "first name", "last name" });
 	ITableIterator * iter = table.getIterator();
@@ -45,12 +69,25 @@ int main(int argc, char ** argv) {
 		iter->insert(row);
 
 	std::cout << endAsString(iter->isEnd()) << std::endl;
-	iter->first();
 
-	while (!iter->isEnd()) {
-		printMap(iter->get());
-		iter->next();
-	}
+	printTable(&table);
+
+	table.removeRow(1);
+	printTable(&table);
+
+	auto tmpIter = table.getIterator();
+	tmpIter->next();
+	tmpIter->remove();
+	delete tmpIter;
+	printTable(&table);
+
+	table.updateRow(people.at(1), 0);
+	printTable(&table);
+
+	table.appendRow(people.at(2));
+	printTable(&table);
+
+	delete iter;
 
 	return 0;
 }

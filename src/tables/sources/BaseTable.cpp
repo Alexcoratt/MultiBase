@@ -65,9 +65,13 @@ std::map<KEY, VALUE> arrToMap(KEY const * keys, VALUE const * values, std::size_
 
 template <typename T>
 std::_List_iterator<T> getNthIter(std::list<T> & list, std::size_t const & index) {
+	std::size_t height = list.size();
+	if (index >= height)
+		throw std::out_of_range("BaseTable::getRow: index " + std::to_string(index) + " is out of height " + std::to_string(height));
+
 	auto count = index;
 	auto it = list.begin();
-	while (count)
+	while (count--)
 		++it;
 	return it;
 }
@@ -140,11 +144,16 @@ void BaseTable::updateRow(std::map<std::string, AutoValue> const & row, std::lis
 	mapToArr(*iter, _headings, _width, row);
 }
 
-void BaseTable::removeRow(std::size_t const & index) { _rows.erase(getNthIter(_rows, index)); }
+void BaseTable::removeRow(std::size_t const & index) {
+	auto iter = getNthIter(_rows, index);
+	delete [] *iter;
+	_rows.erase(iter);
+}
 
 void BaseTable::removeRow(std::list<AutoValue *>::iterator & iter) {
 	if (iter == _rows.end())
 		throw std::out_of_range("BaseTable::removeRow: iterator is out of range");
+	delete [] *iter;
 	_rows.erase(iter);
 }
 
