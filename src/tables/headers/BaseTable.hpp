@@ -14,7 +14,7 @@ private:
 	std::string * _headings;
 	std::list<AutoValue *> _rows;
 
-	std::map<std::string, AutoValue> getRow(std::list<AutoValue *>::iterator &) const;
+	std::map<std::string, AutoValue> getRow(std::list<AutoValue *>::iterator const &) const;
 	void insertRow(std::map<std::string, AutoValue> const &, std::list<AutoValue *>::iterator &);
 	void updateRow(const std::map<std::string, AutoValue> &row, std::list<AutoValue *>::iterator &);
 	void removeRow(std::list<AutoValue *>::iterator &);

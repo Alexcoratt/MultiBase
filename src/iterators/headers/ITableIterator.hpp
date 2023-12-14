@@ -12,8 +12,9 @@ public:
 
 	virtual void first() = 0;
 	virtual void next() = 0;
-	virtual std::map<std::string, AutoValue> get() = 0;
-	virtual bool isEnd() = 0;
+	virtual std::map<std::string, AutoValue> get() { return ((ITableIterator *)this)->get(); }
+	virtual std::map<std::string, AutoValue> get() const = 0;
+	virtual bool isEnd() const = 0;
 
 	// inserts a row before current position
 	virtual void insert(std::map<std::string, AutoValue> const &) = 0;

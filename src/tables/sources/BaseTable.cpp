@@ -98,7 +98,7 @@ std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) co
 	return arrToMap(_headings, *getNthIter(_rows, index), _width);
 }
 
-std::map<std::string, AutoValue> BaseTable::getRow(std::list<AutoValue *>::iterator & iter) const {
+std::map<std::string, AutoValue> BaseTable::getRow(std::list<AutoValue *>::iterator const & iter) const {
 	if (iter == _rows.end())
 		throw std::out_of_range("BaseTable::getRow: iterator is out of range");
 	return arrToMap(_headings, *iter, _width);

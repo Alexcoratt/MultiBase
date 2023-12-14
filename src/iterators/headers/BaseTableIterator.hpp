@@ -15,16 +15,16 @@ private:
 
 public:
 	BaseTableIterator(BaseTable * table);
-	BaseTableIterator(BaseTableIterator & other);
-	BaseTableIterator & operator=(BaseTableIterator & other);
+	BaseTableIterator(BaseTableIterator const & other);
+	BaseTableIterator & operator=(BaseTableIterator const & other);
 	~BaseTableIterator() override;
 
 	void swap(BaseTableIterator & other);
 
 	void first() override;
 	void next() override;
-	std::map<std::string, AutoValue> get() override;
-	bool isEnd() override;
+	std::map<std::string, AutoValue> get() const override;
+	bool isEnd() const override;
 
 	void insert(std::map<std::string, AutoValue> const &) override;
 	void update(std::map<std::string, AutoValue> const &) override;

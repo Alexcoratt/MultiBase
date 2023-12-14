@@ -3,11 +3,13 @@
 #include "BaseTableIterator.hpp"
 #include "BaseTable.hpp"
 
+#include "EndOfTableException.hpp"
+
 BaseTableIterator::BaseTableIterator(BaseTable * table) : _table(table), _listIterator(table->_rows.begin()) {}
 
-BaseTableIterator::BaseTableIterator(BaseTableIterator & other) : _table(other._table), _listIterator(other._listIterator) {}
+BaseTableIterator::BaseTableIterator(BaseTableIterator const & other) : _table(other._table), _listIterator(other._listIterator) {}
 
-BaseTableIterator & BaseTableIterator::operator=(BaseTableIterator & other) {
+BaseTableIterator & BaseTableIterator::operator=(BaseTableIterator const & other) {
 	if (this != &other) {
 		BaseTableIterator tmp{other};
 		swap(tmp);
@@ -24,9 +26,17 @@ void BaseTableIterator::swap(BaseTableIterator & other) {
 
 void BaseTableIterator::first() { _listIterator = _table->_rows.begin(); }
 void BaseTableIterator::next() { ++_listIterator; }
-std::map<std::string, AutoValue> BaseTableIterator::get() { return _table->getRow(_listIterator); }
-bool BaseTableIterator::isEnd() { return _listIterator == _table->_rows.end(); }
+std::map<std::string, AutoValue> BaseTableIterator::get() const {
+	if (isEnd())
+		throw EndOfTableException("BaseTable");
+	return _table->getRow(_listIterator);
+}
+bool BaseTableIterator::isEnd() const { return _listIterator == _table->_rows.end(); }
 
 void BaseTableIterator::insert(std::map<std::string, AutoValue> const & row) { _table->insertRow(row, _listIterator); }
-void BaseTableIterator::update(std::map<std::string, AutoValue> const & row) { _table->updateRow(row, _listIterator); }
+void BaseTableIterator::update(std::map<std::string, AutoValue> const & row) {
+	if (isEnd())
+		throw EndOfTableException("BaseTable");
+	_table->updateRow(row, _listIterator);
+}
 void BaseTableIterator::remove() { _table->removeRow(_listIterator); }
