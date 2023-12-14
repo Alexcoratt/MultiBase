@@ -45,7 +45,7 @@ void BaseTable::swap(BaseTable & other) {
 	std::swap(_rows, other._rows);
 }
 
-std::vector<std::string> BaseTable::getHeadings() const {
+std::vector<std::string> BaseTable::getHeaders() const {
 	std::vector<std::string> res(_width);
 	for (std::size_t i{0}; i < _width; ++i)
 		res[i] = _headings[i];

@@ -43,7 +43,7 @@ std::vector<std::map<std::string, AutoValue>> const people = {
 };
 
 void printTable(ITable * table) {
-	auto headings = table->getHeadings();
+	auto headings = table->getHeaders();
 	printRow(headings);
 
 	auto iter = table->getIterator();

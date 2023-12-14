@@ -12,6 +12,12 @@ friend class CSVTableConnectionIterator;
 private:
 	std::string _filename;
 
+	static std::map<std::string, AutoValue> parseRow(std::vector<std::string> const & headers, std::string const & line);
+	static std::string rowToString(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row);
+
+	static std::string readNextRow(std::istream & input);
+	static void skipNextRows(std::istream & input, std::size_t const & rowCount = 1);
+
 public:
 	CSVTableConnection(std::string const & filename);
 	CSVTableConnection(CSVTableConnection const & other);
@@ -20,10 +26,7 @@ public:
 
 	void swap(CSVTableConnection & other);
 
-	static std::map<std::string, AutoValue> parseNextRow(std::ifstream & file);
-	static void skipNextRows(std::ifstream & file, std::size_t rowCount = 1);
-
-	std::vector<std::string> getHeadings() const override;
+	std::vector<std::string> getHeaders() const override;
 	std::size_t getWidth() const override;
 	std::size_t getHeight() const override;
 

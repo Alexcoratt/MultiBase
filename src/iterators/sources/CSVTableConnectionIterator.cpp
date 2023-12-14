@@ -6,12 +6,12 @@
 
 #include "EndOfTableException.hpp"
 
-CSVTableConnectionIterator::CSVTableConnectionIterator(CSVTableConnection * conn) : _conn(conn), _file(new std::ifstream(conn->_filename)) {
+CSVTableConnectionIterator::CSVTableConnectionIterator(CSVTableConnection * conn) : _conn(conn), _file(new std::fstream(conn->_filename)) {
 	_currentRowIndex = 0;
 	next();
 }
 
-CSVTableConnectionIterator::CSVTableConnectionIterator(CSVTableConnectionIterator const & other) : _conn(other._conn), _file(new std::ifstream(_conn->_filename)) {
+CSVTableConnectionIterator::CSVTableConnectionIterator(CSVTableConnectionIterator const & other) : _conn(other._conn), _file(new std::fstream(_conn->_filename)) {
 	CSVTableConnection::skipNextRows(*_file, other._currentRowIndex);
 	next();
 }
@@ -46,19 +46,21 @@ void CSVTableConnectionIterator::first() {
 void CSVTableConnectionIterator::next() {
 	if (isEnd())
 		throw EndOfTableException(_conn->_filename);
-	_currentRow = CSVTableConnection::parseNextRow(*_file);
+	_currentRow = CSVTableConnection::parseRow(_conn->getHeaders(), CSVTableConnection::readNextRow(*_file));
 	++_currentRowIndex;
 }
 
 std::map<std::string, AutoValue> CSVTableConnectionIterator::get() const { return _currentRow; }
 
 bool CSVTableConnectionIterator::isEnd() const { return _file->eof(); }
+void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const & row) { _conn->insertRow(row, _currentRowIndex++); }
 
-void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const & row) {
-	if (isEnd()) {
-		_conn->appendRow(row);
-		return;
-	}
+void CSVTableConnectionIterator::update(std::map<std::string, AutoValue> const & row) {
+	_currentRow = row;
+	_conn->updateRow(row, _currentRowIndex);
+}
 
-
+void CSVTableConnectionIterator::remove() {
+	next();
+	_conn->removeRow(_currentRowIndex);
 }

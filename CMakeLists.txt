@@ -13,5 +13,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE DynValues_lib)
 target_include_directories(${PROJECT_NAME}
 	PRIVATE src/iterators/headers
 	PRIVATE src/tables/headers
+	PRIVATE src/auxillary/headers
 	PRIVATE src/exceptions
 )

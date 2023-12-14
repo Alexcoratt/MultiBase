@@ -27,7 +27,7 @@ public:
 
 	void swap(BaseTable & other);
 
-	std::vector<std::string> getHeadings() const override;
+	std::vector<std::string> getHeaders() const override;
 	std::size_t getWidth() const override;
 	std::size_t getHeight() const override;
 

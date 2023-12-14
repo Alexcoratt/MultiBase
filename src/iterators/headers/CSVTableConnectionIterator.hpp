@@ -9,7 +9,7 @@ class CSVTableConnection;
 class CSVTableConnectionIterator : public ITableIterator {
 private:
 	CSVTableConnection * _conn;
-	std::ifstream * _file;
+	std::fstream * _file;
 	std::map<std::string, AutoValue> _currentRow;
 	std::size_t _currentRowIndex;
 
