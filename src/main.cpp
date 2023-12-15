@@ -60,8 +60,8 @@ void printTable(ITable * table) {
 }
 
 int main(int argc, char ** argv) {
-	BaseTable table({ "id", "first name", "last name" });
-	ITableIterator * iter = table.getIterator();
+	ITable * table = new BaseTable({ "id", "first name", "last name" });
+	ITableIterator * iter = table->getIterator();
 
 	std::cout << endAsString(iter->isEnd()) << std::endl;
 
@@ -70,22 +70,22 @@ int main(int argc, char ** argv) {
 
 	std::cout << endAsString(iter->isEnd()) << std::endl;
 
-	printTable(&table);
+	printTable(table);
 
-	table.removeRow(1);
-	printTable(&table);
+	table->removeRow(1);
+	printTable(table);
 
-	auto tmpIter = table.getIterator();
+	auto tmpIter = table->getIterator();
 	tmpIter->next();
 	tmpIter->remove();
 	delete tmpIter;
-	printTable(&table);
+	printTable(table);
 
-	table.updateRow(people.at(1), 0);
-	printTable(&table);
+	table->updateRow(people.at(1), 0);
+	printTable(table);
 
-	table.appendRow(people.at(2));
-	printTable(&table);
+	table->appendRow(people.at(2));
+	printTable(table);
 
 	delete iter;
 

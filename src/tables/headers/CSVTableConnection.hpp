@@ -16,7 +16,7 @@ private:
 	static std::string rowToString(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row);
 
 	static std::string readNextRow(std::istream & input);
-	static void skipNextRows(std::istream & input, std::size_t const & rowCount = 1);
+	static void skipNextRows(std::istream & input, std::size_t rowCount = 1);
 
 public:
 	CSVTableConnection(std::string const & filename);
