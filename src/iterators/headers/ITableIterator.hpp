@@ -12,7 +12,7 @@ public:
 
 	virtual void first() = 0;
 	virtual void next() = 0;
-	virtual std::map<std::string, AutoValue> get() { return ((ITableIterator *)this)->get(); }
+	virtual std::map<std::string, AutoValue> get() { return ((ITableIterator const *)this)->get(); }
 	virtual std::map<std::string, AutoValue> get() const = 0;
 	virtual bool isEnd() const = 0;
 
