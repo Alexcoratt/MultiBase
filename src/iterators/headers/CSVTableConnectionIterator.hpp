@@ -2,6 +2,8 @@
 #define CSV_TABLE_CONNECTION_ITERATOR_HPP
 
 #include <fstream>
+#include <string>
+
 #include "ITableIterator.hpp"
 
 class CSVTableConnection;
@@ -9,7 +11,7 @@ class CSVTableConnection;
 class CSVTableConnectionIterator : public ITableIterator {
 private:
 	CSVTableConnection * _conn;
-	std::fstream * _file;
+	std::iostream * _sourcestream;
 	std::map<std::string, AutoValue> _currentRow;
 	std::size_t _currentRowIndex;
 

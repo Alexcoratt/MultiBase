@@ -7,6 +7,8 @@
 
 #include "split_string.h"
 
+#include "UnableToConnectException.hpp"
+
 AutoValue parseValue(std::string line) {
 	return line;
 }
@@ -18,10 +20,11 @@ std::string valueToCSV(AutoValue const & value) {
 std::map<std::string, AutoValue> CSVTableConnection::parseRow(std::vector<std::string> const & headers, std::string const & line) {
 	unsigned int width;
 	char ** parts;
-	split_string(line.c_str(), ',', &width, &parts);
+	split_string_quote_protected(line.c_str(), ',', &width, &parts);
 
-	if (width != headers.size())
-		throw TableException("headers array and row elements array have different sizes");
+	unsigned int headerCount = headers.size();
+	if (width != headerCount && width != 0)
+		throw TableException("headers array and row elements array have different sizes: " + std::to_string(headerCount) + " required and " + std::to_string(width) + " provided");
 
 	std::map<std::string, AutoValue> res;
 	for (unsigned int i = 0; i < width; ++i) {
@@ -80,7 +83,11 @@ void CSVTableConnection::skipNextRows(std::istream & input, std::size_t rowCount
 
 // private methods
 
-CSVTableConnection::CSVTableConnection(std::string const & filename) : _filename{filename} {}
+CSVTableConnection::CSVTableConnection(std::string const & filename) : _filename{filename} {
+	std::fstream file(_filename);
+	if (!file.good())
+		throw UnableToConnectException(_filename);
+}
 CSVTableConnection::CSVTableConnection(CSVTableConnection const & other) : _filename{other._filename} {}
 CSVTableConnection & CSVTableConnection::operator=(CSVTableConnection const & other) {
 	if (this != &other) {

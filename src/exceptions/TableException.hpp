@@ -7,7 +7,8 @@ class TableException : public std::exception {
 private:
 	std::string _msg;
 public:
-	TableException(std::string const & msg) { _msg = getExceptionName() + ": " + msg; }
+	TableException() {}
+	explicit TableException(std::string const & msg) { _msg = getExceptionName() + ": " + msg; }
 	virtual std::string getExceptionName() const { return "TableException"; }
 
 	char const * what() const noexcept override { return _msg.c_str(); }
