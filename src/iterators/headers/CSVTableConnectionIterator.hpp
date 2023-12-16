@@ -3,6 +3,7 @@
 
 #include <fstream>
 #include <string>
+#include <pthread.h>
 
 #include "ITableIterator.hpp"
 
@@ -11,9 +12,10 @@ class CSVTableConnection;
 class CSVTableConnectionIterator : public ITableIterator {
 private:
 	CSVTableConnection * _conn;
-	std::iostream * _sourcestream;
+	std::fstream * _sourcestream;
 	std::map<std::string, AutoValue> _currentRow;
 	std::size_t _currentRowIndex;
+	std::fstream::pos_type _lastPos;
 
 public:
 	CSVTableConnectionIterator(CSVTableConnection * conn);

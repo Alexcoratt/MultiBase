@@ -45,20 +45,35 @@ int main(int argc, char ** argv) {
 
 	auto const headings = table->getHeaders();
 	ITableIterator * iter = table->getIterator();
+	std::map<std::string, AutoValue> row;
+	std::map<std::string, AutoValue> cur;
 	unsigned int count = 0;
-	while (count++ != 15) {
-		for (auto const & heading : headings)
-			std::cout << heading << ": " << iter->get().at(heading) << '\n';
+	while (!iter->isEnd()) {
+		row = iter->get();
+		for (unsigned int i = 0; i < 2; ++i)
+			std::cout << headings[i] << ": " << row.at(headings[i]) << '\n';
+		std::cout << std::endl;
+		iter->next();
+		if (++count == 20) {
+			cur = row;
+			break;
+		}
+	}
+
+	std::cout << "Current: " << cur.at(headings[0]) << std::endl;
+
+	iter->insert(cur);
+	std::cout << "Current: " << iter->isEnd() << std::endl;
+	iter->first();
+
+	while (!iter->isEnd()) {
+		row = iter->get();
+		for (unsigned int i = 0; i < 2; ++i)
+			std::cout << headings[i] << ": " << row.at(headings[i]) << '\n';
 		std::cout << std::endl;
 		iter->next();
 	}
-	CSVTableConnectionIterator iter2(*dynamic_cast<CSVTableConnectionIterator *>(iter));
-	while (!iter2.isEnd()) {
-		for (auto const & heading : headings)
-			std::cout << heading << ": " << iter2.get().at(heading) << '\n';
-		std::cout << std::endl;
-		iter2.next();
-	}
+
 	delete iter;
 	delete table;
 

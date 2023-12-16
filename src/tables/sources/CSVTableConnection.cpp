@@ -14,7 +14,7 @@ AutoValue parseValue(std::string line) {
 }
 
 std::string valueToCSV(AutoValue const & value) {
-	return "\"" + (std::string)value + "\"";
+	return (std::string)value;
 }
 
 std::map<std::string, AutoValue> CSVTableConnection::parseRow(std::vector<std::string> const & headers, std::string const & line) {
@@ -36,11 +36,11 @@ std::map<std::string, AutoValue> CSVTableConnection::parseRow(std::vector<std::s
 }
 
 std::string CSVTableConnection::rowToString(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row) {
-	std::stringstream res{valueToCSV(row.at(headers.at(0)))};
+	std::stringstream res;
+	res << valueToCSV(row.at(headers.at(0)));
 	unsigned int width = headers.size();
 	for (unsigned int i = 1; i < width; ++i)
 		res << ',' << valueToCSV(row.at(headers.at(i)));
-	res << '\n';
 	return res.str();
 }
 
@@ -72,7 +72,7 @@ void CSVTableConnection::skipNextRows(std::istream & input, std::size_t rowCount
 	bool quotesClosed = true;
 	char symb;
 	while(rowCount--) {
-		if (input.eof())
+		if (!input.good())
 			throw EndOfTableException("CSVTableConnection");
 		while ((symb = input.get()) != '\n' && quotesClosed) {
 			if (symb == '\"')
