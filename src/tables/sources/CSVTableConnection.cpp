@@ -159,7 +159,8 @@ void CSVTableConnection::insertRow(std::map<std::string, AutoValue> const & row,
 }
 
 void CSVTableConnection::appendRow(std::map<std::string, AutoValue> const & row) {
-	throw std::runtime_error("CSVTableConnection::appendRow: coming soon");
+	std::fstream file(_filename, std::ios::app);
+	file << rowToString(getHeaders(), row) << std::endl;
 }
 
 void CSVTableConnection::updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) {
