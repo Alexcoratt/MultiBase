@@ -9,41 +9,6 @@
 
 #include "UnableToConnectException.hpp"
 
-AutoValue parseValue(std::string line) {
-	return line;
-}
-
-std::string valueToCSV(AutoValue const & value) {
-	return (std::string)value;
-}
-
-std::map<std::string, AutoValue> CSVTableConnection::parseRow(std::vector<std::string> const & headers, std::string const & line) {
-	unsigned int width;
-	char ** parts;
-	split_string_quote_protected(line.c_str(), ',', &width, &parts);
-
-	unsigned int headerCount = headers.size();
-	if (width != headerCount && width != 0)
-		throw TableException("headers array and row elements array have different sizes: " + std::to_string(headerCount) + " required and " + std::to_string(width) + " provided");
-
-	std::map<std::string, AutoValue> res;
-	for (unsigned int i = 0; i < width; ++i) {
-		res[headers[i]] = parseValue(parts[i]);
-		free(parts[i]);
-	}
-	free(parts);
-	return res;
-}
-
-std::string CSVTableConnection::rowToString(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row) {
-	std::stringstream res;
-	res << valueToCSV(row.at(headers.at(0)));
-	unsigned int width = headers.size();
-	for (unsigned int i = 1; i < width; ++i)
-		res << ',' << valueToCSV(row.at(headers.at(i)));
-	return res.str();
-}
-
 bool quotesClosed(std::string const & line) {
 	bool res = true;
 	for (char symb : line)
@@ -83,12 +48,12 @@ void CSVTableConnection::skipNextRows(std::istream & input, std::size_t rowCount
 
 // private methods
 
-CSVTableConnection::CSVTableConnection(std::string const & filename) : _filename{filename} {
+CSVTableConnection::CSVTableConnection(std::string const & filename, ILineParser * lineParser) : _filename{filename}, _lineParser(lineParser) {
 	std::fstream file(_filename);
 	if (!file.good())
 		throw UnableToConnectException(_filename);
 }
-CSVTableConnection::CSVTableConnection(CSVTableConnection const & other) : _filename{other._filename} {}
+CSVTableConnection::CSVTableConnection(CSVTableConnection const & other) : _filename{other._filename}, _lineParser(other._lineParser) {}
 CSVTableConnection & CSVTableConnection::operator=(CSVTableConnection const & other) {
 	if (this != &other) {
 		CSVTableConnection tmp(other);
@@ -151,7 +116,7 @@ std::size_t CSVTableConnection::getHeight() const {
 std::map<std::string, AutoValue> CSVTableConnection::getRow(std::size_t const & index) const {
 	std::ifstream file(_filename);
 	skipNextRows(file, index + 1);
-	return parseRow(getHeaders(), readNextRow(file));
+	return _lineParser->parseLine(getHeaders(), readNextRow(file));
 }
 
 void CSVTableConnection::insertRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) {
@@ -160,7 +125,7 @@ void CSVTableConnection::insertRow(std::map<std::string, AutoValue> const & row,
 
 void CSVTableConnection::appendRow(std::map<std::string, AutoValue> const & row) {
 	std::fstream file(_filename, std::ios::app);
-	file << rowToString(getHeaders(), row) << std::endl;
+	file << _lineParser->parseReverse(getHeaders(), row) << std::endl;
 }
 
 void CSVTableConnection::updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) {

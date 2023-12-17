@@ -43,7 +43,7 @@ void CSVTableConnectionIterator::first() {
 	_sourcestream->seekg(0);
 	CSVTableConnection::skipNextRows(*_sourcestream);
 	auto lp = _sourcestream->tellg();
-	_currentRow = CSVTableConnection::parseRow(_conn->getHeaders(), CSVTableConnection::readNextRow(*_sourcestream));
+	_currentRow = _conn->_lineParser->parseLine(_conn->getHeaders(), CSVTableConnection::readNextRow(*_sourcestream));
 	_currentRowIndex = 0;
 	_lastPos = lp;
 }
@@ -52,7 +52,7 @@ void CSVTableConnectionIterator::next() {
 	if (isEnd())
 		throw EndOfTableException(_conn->_filename);
 	auto lp = _sourcestream->tellg();
-	_currentRow = CSVTableConnection::parseRow(_conn->getHeaders(), CSVTableConnection::readNextRow(*_sourcestream));
+	_currentRow = _conn->_lineParser->parseLine(_conn->getHeaders(), CSVTableConnection::readNextRow(*_sourcestream));
 	++_currentRowIndex;
 	_lastPos = lp;
 }
@@ -65,7 +65,7 @@ void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const &
 	auto headers = _conn->getHeaders();
 	if (isEnd()) {
 		std::ofstream writer(_conn->_filename, std::ios::app);
-		writer << CSVTableConnection::rowToString(headers, row) << std::endl;
+		writer << _conn->_lineParser->parseReverse(headers, row) << std::endl;
 		auto lp = _sourcestream->tellg();
 		_sourcestream->seekg(writer.tellp());
 		_lastPos = lp;
@@ -84,10 +84,10 @@ void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const &
 
 	std::fstream writer(_conn->_filename);
 	writer.seekg(_lastPos);
-	writer << CSVTableConnection::rowToString(headers, row) << std::endl;
+	writer << _conn->_lineParser->parseReverse(headers, row) << std::endl;
 	_sourcestream->seekg(writer.tellg());
 	while (!btIter->isEnd()) {
-		writer << CSVTableConnection::rowToString(headers, btIter->get()) << std::endl;
+		writer << _conn->_lineParser->parseReverse(headers, btIter->get()) << std::endl;
 		btIter->next();
 	}
 	delete btIter;

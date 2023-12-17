@@ -4,6 +4,7 @@
 #include <string>
 
 #include "ITable.hpp"
+#include "ILineParser.hpp"
 #include "CSVTableConnectionIterator.hpp"
 
 class CSVTableConnection : public ITable {
@@ -11,15 +12,13 @@ friend class CSVTableConnectionIterator;
 
 private:
 	std::string _filename;
-
-	static std::map<std::string, AutoValue> parseRow(std::vector<std::string> const & headers, std::string const & line);
-	static std::string rowToString(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row);
+	ILineParser * _lineParser;
 
 	static std::string readNextRow(std::istream & input);
 	static void skipNextRows(std::istream & input, std::size_t rowCount = 1);
 
 public:
-	CSVTableConnection(std::string const & filename);
+	CSVTableConnection(std::string const & filename, ILineParser * _lineParser);
 	CSVTableConnection(CSVTableConnection const & other);
 	CSVTableConnection & operator=(CSVTableConnection const & other);
 	~CSVTableConnection() override;

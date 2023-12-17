@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-project(MultiBase)
+project(MultiBase CXX C)
 
 add_subdirectory(modules/dynvalues)
 
@@ -14,5 +14,6 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE src/iterators/headers
 	PRIVATE src/tables/headers
 	PRIVATE src/auxillary/headers
+	PRIVATE src/parsers/headers
 	PRIVATE src/exceptions
 )

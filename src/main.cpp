@@ -5,7 +5,23 @@
 #include <BaseTable.hpp>
 #include <CSVTableConnection.hpp>
 
+#include <BaseLineParser.hpp>
+#include <BaseValueParser.hpp>
+
 #define FILENAME "../data/testdata/backloggd_games_short.csv"
+
+void printTable(ITable * table) {
+	auto iter = table->getIterator();
+	auto headers = table->getHeaders();
+	while (!iter->isEnd()) {
+		auto row = iter->get();
+		for (auto const & header : headers)
+			std::cout << header << ": " << row.at(header) << '\n';
+		std::cout << std::endl;
+		iter->next();
+	}
+	delete iter;
+}
 
 int main(int argc, char ** argv) {
 	if (argc > 2) {
@@ -20,17 +36,19 @@ int main(int argc, char ** argv) {
 	else
 		filename = defaultFilename;
 
-	CSVTableConnection csvTable(filename);
-	BaseTable baseTable(csvTable.getHeaders());
+	BaseValueParser bvp;
+	BaseLineParser blp{&bvp};
+	CSVTableConnection csvTable(filename, &blp);
+	auto const headers = csvTable.getHeaders();
+	BaseTable baseTable(headers);
 	auto csvIter = csvTable.getIterator();
-	//auto btIter = baseTable.getIterator();
 	while(!csvIter->isEnd()) {
-		//btIter->insert(csvIter->get());
+		baseTable.appendRow(csvIter->get());
 		csvIter->next();
 	}
-
 	delete csvIter;
-	//delete btIter;
+
+	printTable(&baseTable);
 
 	return 0;
 }

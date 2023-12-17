@@ -1,6 +1,9 @@
+#ifndef SPLIT_STRING_H
+#define SPLIT_STRING_H
+
 #include <stdlib.h>
 
-unsigned int strlento(char const * string, char const endsymb) {
+inline unsigned int strlento(char const * string, char const endsymb) {
 	unsigned int res = 0;
 	char const * symb = string;
 	while (*symb != endsymb && *symb != '\0') {
@@ -10,7 +13,7 @@ unsigned int strlento(char const * string, char const endsymb) {
 	return res;
 }
 
-unsigned int strlento_quote_protected(char const * string, char const endsymb) {
+inline unsigned int strlento_quote_protected(char const * string, char const endsymb) {
 	unsigned int res = 0;
 	char const * symb = string;
 	char quoted = 0;
@@ -23,7 +26,7 @@ unsigned int strlento_quote_protected(char const * string, char const endsymb) {
 	return res;
 }
 
-unsigned int count_char(char const * string, char search) {
+inline unsigned int count_char(char const * string, char search) {
 	unsigned int res = 0;
 	for (char const * symb = string; *symb != '\0'; ++symb)
 		if (*symb == search)
@@ -31,7 +34,7 @@ unsigned int count_char(char const * string, char search) {
 	return res;
 }
 
-unsigned int count_char_quote_protected(char const * string, char search) {
+inline unsigned int count_char_quote_protected(char const * string, char search) {
 	unsigned int res = 0;
 	char quoted = 0;
 	for (char const * symb = string; *symb != '\0'; ++symb) {
@@ -44,7 +47,7 @@ unsigned int count_char_quote_protected(char const * string, char search) {
 }
 
 // for resv nested freeing required
-void split_string(char const * string, char const delimiter, unsigned int * resc, char *** resv) {
+inline void split_string(char const * string, char const delimiter, unsigned int * resc, char *** resv) {
 	if (string[0] == '\0') {
 		*resc = 0;
 		*resv = NULL;
@@ -69,7 +72,7 @@ void split_string(char const * string, char const delimiter, unsigned int * resc
 	}
 }
 
-void split_string_quote_protected(char const * string, char const delimiter, unsigned int * resc, char *** resv) {
+inline void split_string_quote_protected(char const * string, char const delimiter, unsigned int * resc, char *** resv) {
 	if (string[0] == '\0') {
 		*resc = 0;
 		*resv = NULL;
@@ -99,3 +102,5 @@ void split_string_quote_protected(char const * string, char const delimiter, uns
 	}
 	//printf("\n%s\n", (*resv)[4]);
 }
+
+#endif
