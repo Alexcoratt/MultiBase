@@ -24,10 +24,9 @@ IValueParser * BaseLineParser::getValueParser() { return _valueParser; }
 void BaseLineParser::setValueParser(IValueParser * valueParser) { _valueParser = valueParser; }
 
 std::map<std::string, AutoValue> BaseLineParser::parseLine(std::vector<std::string> const & headers, std::string const & line) const {
-	try {
 	unsigned int width;
 	char ** parts;
-	split_string_quote_protected(line.c_str(), ',', &width, &parts);
+	split_string_screened(line.c_str(), ',', '\"', &width, &parts);
 
 	unsigned int headerCount = headers.size();
 	if (width != headerCount && width != 0)
@@ -35,15 +34,16 @@ std::map<std::string, AutoValue> BaseLineParser::parseLine(std::vector<std::stri
 
 	std::map<std::string, AutoValue> res;
 	for (unsigned int i = 0; i < width; ++i) {
-		res[headers[i]] = _valueParser->parseValue(parts[i]);
+		try {
+			res[headers[i]] = _valueParser->parseValue(parts[i]);
+		} catch (std::exception const & err) {
+			std::cerr << err.what() << "\nWhile parsing line\n===\n" << line << "\n===\nValue being parsed: \"" << parts[i] << '\"' << std::endl;
+			throw err;
+		}
 		free(parts[i]);
 	}
 	free(parts);
 	return res;
-	} catch (std::exception const & err) {
-		std::cerr << err.what() << "\nOn line\n===\n" << line << "\n===" << std::endl;
-		throw err;
-	}
 }
 
 std::string BaseLineParser::parseReverse(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row) const {

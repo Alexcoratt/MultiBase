@@ -13,6 +13,8 @@
 
 #include <split_string.h>
 
+#include <set>
+
 #define FILENAME "../data/testdata/backloggd_games_short.csv"
 
 void printTable(ITable * table) {
@@ -33,15 +35,23 @@ public:
 	AutoValue parseVectorString(std::string const & str) const {
 		unsigned int width;
 		char ** parts;
-		split_string(str.c_str(), ',', &width, &parts);
+		split_string_screened(str.c_str(), ',', '\'', &width, &parts);
 		AutoValue res;
 		for (unsigned int i = 0; i < width; ++i) {
+			if (strlen(parts[i]) == 0) {
+				res.push_back(NullValue{});
+				continue;
+			}
 			char delta = 0;
 			if (parts[i][0] == ' ')
 				delta = 1;
-			if (strlen(parts[i]) > 1)
+			if (strlen(parts[i]) > delta)
 				res.push_back(parseValue(std::string(parts[i] + delta)));
+			else
+				res.push_back(parseValue(std::string(parts[i])));
+			free(parts[i]);
 		}
+		free(parts);
 		return res;
 	}
 
@@ -104,6 +114,8 @@ public:
 			return NullValue{};
 		if (value.at(0) == '\'' || value.at(0) == '\"')
 			return parseQuotedString(value);
+		if (value.at(0) == '[')
+			return parseVectorString(value.substr(1, value.size() - 2));
 		if (isDigital(value))
 			return parseDigital(value);
 		return parseString(value);
@@ -113,6 +125,13 @@ public:
 		return (std::string)value;
 	}
 };
+
+void insertVectorValue(std::set<AutoValue> & dest, AutoValue const & source) {
+	std::size_t len = source.size();
+	for (std::size_t i = 0; i < len; ++i) {
+		dest.insert(source.at(i));
+	}
+}
 
 int main(int argc, char ** argv) {
 	if (argc > 2) {
@@ -127,20 +146,64 @@ int main(int argc, char ** argv) {
 	else
 		filename = defaultFilename;
 
-	BaseValueParser bvp;
-	MyValueParser mvp;
-	BaseLineParser blp{&mvp};
-	CSVTableConnection csvTable(filename, &blp);
+	MyValueParser valueParser;
+	BaseLineParser lineParser{&valueParser};
+	CSVTableConnection csvTable(filename, &lineParser);
 	auto const headers = csvTable.getHeaders();
+
 	BaseTable baseTable(headers);
+
+	BaseTable devs({"id", "name"});
+	std::set<AutoValue> devNames;
+
+	BaseTable genres({"id", "name"});
+	std::set<AutoValue> genreNames;
+
+	BaseTable platforms({"id", "name"});
+	std::set<AutoValue> platformNames;
+
 	auto csvIter = csvTable.getIterator();
 	while(!csvIter->isEnd()) {
-		baseTable.appendRow(csvIter->get());
+		auto row = csvIter->get();
+		baseTable.appendRow(row);
+
+		insertVectorValue(devNames, row.at("Developers"));
+		//std::cout << row.at("Developers") << std::endl;
+
+		insertVectorValue(platformNames, row.at("Platforms"));
+		//std::cout << row.at("Platforms") << std::endl;
+
+		insertVectorValue(genreNames, row.at("Genres"));
+		//std::cout << row.at("Genres") << std::endl;
+
 		csvIter->next();
 	}
 	delete csvIter;
 
-	printTable(&baseTable);
+	std::size_t count = 0;
+	for (auto const & name : devNames)
+		devs.appendRow({
+			{"id", count++},
+			{"name", name}
+		});
+
+	count = 0;
+	for (auto const & name : platformNames)
+		platforms.appendRow({
+			{"id", count++},
+			{"name", name}
+		});
+
+	count = 0;
+	for (auto const & name : genreNames)
+		genres.appendRow({
+			{"id", count++},
+			{"name", name}
+		});
+
+	std::cout << "Developers count: " << devs.getHeight() << std::endl;
+	std::cout << "Platforms count: " << platforms.getHeight() << std::endl;
+	std::cout << "Genres count: " << genres.getHeight() << std::endl;
 
 	return 0;
 }

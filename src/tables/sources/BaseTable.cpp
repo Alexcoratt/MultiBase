@@ -84,17 +84,12 @@ std::_List_const_iterator<T> getNthIter(std::list<T> const & list, std::size_t c
 
 	auto count = index;
 	auto it = list.begin();
-	while (count)
+	while (count--)
 		++it;
 	return it;
 }
 
 std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) const {
-	auto count = index;
-	auto it = _rows.begin();
-	while (count)
-		++it;
-
 	return arrToMap(_headings, *getNthIter(_rows, index), _width);
 }
 
