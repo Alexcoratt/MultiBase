@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <sstream>
+#include <iostream>
 
 #include "BaseLineParser.hpp"
 #include "split_string.h"
@@ -23,6 +24,7 @@ IValueParser * BaseLineParser::getValueParser() { return _valueParser; }
 void BaseLineParser::setValueParser(IValueParser * valueParser) { _valueParser = valueParser; }
 
 std::map<std::string, AutoValue> BaseLineParser::parseLine(std::vector<std::string> const & headers, std::string const & line) const {
+	try {
 	unsigned int width;
 	char ** parts;
 	split_string_quote_protected(line.c_str(), ',', &width, &parts);
@@ -38,6 +40,10 @@ std::map<std::string, AutoValue> BaseLineParser::parseLine(std::vector<std::stri
 	}
 	free(parts);
 	return res;
+	} catch (std::exception const & err) {
+		std::cerr << err.what() << "\nOn line\n===\n" << line << "\n===" << std::endl;
+		throw err;
+	}
 }
 
 std::string BaseLineParser::parseReverse(std::vector<std::string> const & headers, std::map<std::string, AutoValue> const & row) const {
