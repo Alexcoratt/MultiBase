@@ -1,3 +1,9 @@
 [submodule "modules/dynvalues"]
 	path = modules/dynvalues
 	url = https://github.com/Alexcoratt/DynValues
+[submodule "modules/--recursive"]
+	path = modules/--recursive
+	url = https://github.com/alandefreitas/matplotplusplus
+[submodule "modules/matplotplusplus"]
+	path = modules/matplotplusplus
+	url = https://github.com/alandefreitas/matplotplusplus
