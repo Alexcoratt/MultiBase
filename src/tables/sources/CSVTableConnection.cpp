@@ -1,4 +1,6 @@
 #include <sstream>
+#include <fstream>
+#include <stdexcept>
 #include <algorithm>
 
 #include "CSVTableConnection.hpp"
@@ -66,6 +68,34 @@ CSVTableConnection::~CSVTableConnection() {}
 
 void CSVTableConnection::swap(CSVTableConnection & other) {
 	std::swap(_filename, other._filename);
+}
+
+CSVTableConnection CSVTableConnection::createTable(std::string const & filename, std::vector<std::string> const & headers, ILineParser * lineParser) {
+	std::size_t headersCount = headers.size();
+	if (!headersCount)
+		throw std::invalid_argument("CSVTableConnection::createTable: headers vector cannot be empty");
+
+	std::ofstream file(filename);
+	file << headers.at(0);
+
+	for (std::size_t i = 1; i < headersCount; ++i)
+		file << ',' << headers.at(i);
+	file << std::endl;
+
+	return CSVTableConnection(filename, lineParser);
+}
+
+CSVTableConnection CSVTableConnection::createTable(std::string const & filename, ITable * table, ILineParser * lineParser) {
+	CSVTableConnection res = createTable(filename, table->getHeaders(), lineParser);
+
+	auto iter = table->getIterator();
+	while (!iter->isEnd()) {
+		res.appendRow(iter->get());
+		iter->next();
+	}
+	delete iter;
+
+	return res;
 }
 
 std::vector<std::string> CSVTableConnection::getHeaders() const {

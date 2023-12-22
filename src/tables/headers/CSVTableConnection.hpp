@@ -25,6 +25,9 @@ public:
 
 	void swap(CSVTableConnection & other);
 
+	static CSVTableConnection createTable(std::string const & filename, std::vector<std::string> const & headers, ILineParser * lineParser);
+	static CSVTableConnection createTable(std::string const & filename, ITable * table, ILineParser * lineParser);
+
 	std::vector<std::string> getHeaders() const override;
 	std::size_t getWidth() const override;
 	std::size_t getHeight() const override;
