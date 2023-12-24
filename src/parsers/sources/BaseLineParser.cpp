@@ -29,8 +29,17 @@ std::map<std::string, AutoValue> BaseLineParser::parseLine(std::vector<std::stri
 	split_string_screened(line.c_str(), ',', '\"', &width, &parts);
 
 	unsigned int headerCount = headers.size();
-	if (width != headerCount && width != 0)
+	if (width != headerCount && width != 0) {
+		std::cerr << line << std::endl;
+
+		for (unsigned int i = 0; i < width; ++i) {
+			std::cerr << i << ":\t" << parts[i] << '\n';
+			free(parts[i]);
+		}
+		free(parts);
+
 		throw TableException("headers array and row elements array have different sizes: " + std::to_string(headerCount) + " required and " + std::to_string(width) + " provided");
+	}
 
 	std::map<std::string, AutoValue> res;
 	for (unsigned int i = 0; i < width; ++i) {

@@ -55,7 +55,7 @@ CSVTableConnection::CSVTableConnection(std::string const & filename, ILineParser
 	if (!file.good())
 		throw UnableToConnectException(_filename);
 }
-CSVTableConnection::CSVTableConnection(CSVTableConnection const & other) : _filename{other._filename}, _lineParser(other._lineParser) {}
+CSVTableConnection::CSVTableConnection(CSVTableConnection const & other) : _filename{other._filename}, _lineParser{other._lineParser} {}
 CSVTableConnection & CSVTableConnection::operator=(CSVTableConnection const & other) {
 	if (this != &other) {
 		CSVTableConnection tmp(other);
