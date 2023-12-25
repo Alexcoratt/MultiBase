@@ -36,14 +36,14 @@ std::string CSVTableConnection::readNextRow(std::istream & input) {
 }
 
 void CSVTableConnection::skipNextRows(std::istream & input, std::size_t rowCount) {
-	bool quotesClosed = true;
+	bool quoted = false;
 	char symb;
 	while(rowCount--) {
 		if (!input.good())
 			throw EndOfTableException("CSVTableConnection");
-		while ((symb = input.get()) != '\n' && quotesClosed) {
+		while ((symb = input.get()) && (symb != '\n' || quoted) && input.good()) {
 			if (symb == '\"')
-				quotesClosed = !quotesClosed;
+				quoted = !quoted;
 		}
 	}
 }
@@ -138,7 +138,7 @@ std::size_t CSVTableConnection::getHeight() const {
 			skipNextRows(file);
 			++res;
 		} catch (EndOfTableException const &) {
-			return res;
+			return res - 1;
 		}
 	}
 }
