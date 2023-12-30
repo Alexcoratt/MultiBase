@@ -5,7 +5,6 @@
 #include "BaseTable.hpp"
 
 #include "BaseTableIterator.hpp"
-#include "SmartTableIterator.hpp"
 
 BaseTable::BaseTable(std::vector<std::string> const & headings) {
 	_width = headings.size();
@@ -96,7 +95,7 @@ std::map<std::string, AutoValue> BaseTable::getRow(std::size_t const & index) co
 	return arrToMap(_headings, *getNthIter(_rows, index), _width);
 }
 
-std::map<std::string, AutoValue> BaseTable::getRow(std::list<AutoValue *>::iterator const & iter) const {
+std::map<std::string, AutoValue> BaseTable::getRow(std::list<AutoValue *>::const_iterator const & iter) const {
 	if (iter == _rows.end())
 		throw std::out_of_range("BaseTable::getRow: iterator is out of range");
 	return arrToMap(_headings, *iter, _width);
@@ -155,7 +154,5 @@ void BaseTable::removeRow(std::list<AutoValue *>::iterator & iter) {
 	_rows.erase(iter);
 }
 
-multi_base_types::iterator BaseTable::getIterator() {
-	BaseTableIterator res(this);
-	return &res;
-}
+multi_base_types::iterator BaseTable::getIterator() { return BaseTableIterator(this); }
+multi_base_types::const_iterator BaseTable::getIterator() const { return BaseTableConstIterator(this); }

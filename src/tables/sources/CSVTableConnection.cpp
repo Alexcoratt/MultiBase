@@ -8,7 +8,6 @@
 #include "EndOfTableException.hpp"
 
 #include "CSVTableConnectionIterator.hpp"
-#include "SmartTableIterator.hpp"
 
 #include "split_string.h"
 
@@ -166,7 +165,5 @@ void CSVTableConnection::removeRow(std::size_t const & index) {
 	throw std::runtime_error("CSVTableConnection::removeRow: coming soon");
 }
 
-multi_base_types::iterator CSVTableConnection::getIterator() {
-	CSVTableConnectionIterator res(this);
-	return &res;
-}
+multi_base_types::iterator CSVTableConnection::getIterator() { return CSVTableConnectionIterator(this); }
+multi_base_types::const_iterator CSVTableConnection::getIterator() const { return CSVTableConnectionConstIterator(this); }

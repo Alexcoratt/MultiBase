@@ -5,20 +5,17 @@
 #include <string>
 #include <pthread.h>
 
+#include "CSVTableConnectionConstIterator.hpp"
 #include "ITableIterator.hpp"
 
-class CSVTableConnection;
-
-class CSVTableConnectionIterator : public ITableIterator {
+class CSVTableConnectionIterator : public CSVTableConnectionConstIterator, public ITableIterator {
 private:
 	CSVTableConnection * _conn;
 	std::fstream * _sourcestream;
-	multi_base_types::table_row _currentRow;
-	std::size_t _currentRowIndex;
-	std::fstream::pos_type _lastPos;
 
 public:
 	CSVTableConnectionIterator(CSVTableConnection * conn);
+	CSVTableConnectionIterator(CSVTableConnection & conn);
 	CSVTableConnectionIterator(CSVTableConnectionIterator const & other);
 	CSVTableConnectionIterator & operator=(CSVTableConnectionIterator const & other);
 	~CSVTableConnectionIterator() override;
@@ -29,8 +26,6 @@ public:
 
 	void first() override;
 	void next() override;
-	multi_base_types::table_row get() const override;
-	bool isEnd() const override;
 
 	void insert(multi_base_types::table_row const &) override;
 	void update(multi_base_types::table_row const &) override;

@@ -6,11 +6,14 @@
 
 #include <AutoValue.hpp>
 
-class SmartTableIterator;
+class TableSmartIterator;
+class TableSmartConstIterator;
 
 namespace multi_base_types {
 	typedef std::map<std::string, AutoValue> table_row;
-	typedef SmartTableIterator iterator;
+
+	typedef TableSmartIterator iterator;
+	typedef TableSmartConstIterator const_iterator;
 }
 
 #endif

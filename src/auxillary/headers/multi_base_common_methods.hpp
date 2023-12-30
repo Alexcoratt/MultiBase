@@ -5,8 +5,8 @@
 #include <ITable.hpp>
 
 namespace table_methods {
-	void copyTable(ITable * source, ITable * dest);
-	void printTable(ITable * table, std::ostream & out = std::cout);
+	void copyTable(ITable const * source, ITable * dest);
+	void printTable(ITable const * table, std::ostream & out = std::cout);
 }
 
 #endif

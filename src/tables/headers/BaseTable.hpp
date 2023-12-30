@@ -6,6 +6,7 @@
 #include "ITable.hpp"
 
 class BaseTable : public ITable {
+friend class BaseTableConstIterator;
 friend class BaseTableIterator;
 
 private:
@@ -13,7 +14,7 @@ private:
 	std::string * _headings;
 	std::list<AutoValue *> _rows;
 
-	multi_base_types::table_row getRow(std::list<AutoValue *>::iterator const &) const;
+	multi_base_types::table_row getRow(std::list<AutoValue *>::const_iterator const &) const;
 	void insertRow(multi_base_types::table_row const &, std::list<AutoValue *>::iterator &);
 	void updateRow(const multi_base_types::table_row &row, std::list<AutoValue *>::iterator &);
 	void removeRow(std::list<AutoValue *>::iterator &);
@@ -39,6 +40,7 @@ public:
 	void removeRow(const std::size_t &index) override;
 
 	multi_base_types::iterator getIterator() override;
+	multi_base_types::const_iterator getIterator() const override;
 };
 
 #endif

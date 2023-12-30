@@ -7,6 +7,7 @@
 #include "ILineParser.hpp"
 
 class CSVTableConnection : public ITable {
+friend class CSVTableConnectionConstIterator;
 friend class CSVTableConnectionIterator;
 
 private:
@@ -38,6 +39,7 @@ public:
 	void removeRow(std::size_t const & index) override;
 
 	multi_base_types::iterator getIterator() override;
+	multi_base_types::const_iterator getIterator() const override;
 };
 
 #endif

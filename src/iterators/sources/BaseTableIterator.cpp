@@ -5,9 +5,11 @@
 
 #include "EndOfTableException.hpp"
 
-BaseTableIterator::BaseTableIterator(BaseTable * table) : _table(table), _listIterator(table->_rows.begin()) {}
+BaseTableIterator::BaseTableIterator(BaseTable * table) : BaseTableConstIterator(table), _table(table), _iter(table->_rows.begin()) {}
 
-BaseTableIterator::BaseTableIterator(BaseTableIterator const & other) : _table(other._table), _listIterator(other._listIterator) {}
+BaseTableIterator::BaseTableIterator(BaseTable & table) : BaseTableIterator(&table) {}
+
+BaseTableIterator::BaseTableIterator(BaseTableIterator const & other) : BaseTableConstIterator(other._table), _table(other._table), _iter(other._iter) {}
 
 BaseTableIterator & BaseTableIterator::operator=(BaseTableIterator const & other) {
 	if (this != &other) {
@@ -20,25 +22,27 @@ BaseTableIterator & BaseTableIterator::operator=(BaseTableIterator const & other
 BaseTableIterator::~BaseTableIterator() {}
 
 void BaseTableIterator::swap(BaseTableIterator & other) {
+	BaseTableConstIterator::swap(other);
 	std::swap(_table, other._table);
-	std::swap(_listIterator, other._listIterator);
+	std::swap(_iter, other._iter);
 }
 
 BaseTableIterator * BaseTableIterator::getClone() const { return new BaseTableIterator(*this); }
 
-void BaseTableIterator::first() { _listIterator = _table->_rows.begin(); }
-void BaseTableIterator::next() { ++_listIterator; }
-multi_base_types::table_row BaseTableIterator::get() const {
-	if (isEnd())
-		throw EndOfTableException("BaseTable");
-	return _table->getRow(_listIterator);
+void BaseTableIterator::first() {
+	BaseTableConstIterator::first();
+	_iter = _table->_rows.begin();
 }
-bool BaseTableIterator::isEnd() const { return _listIterator == _table->_rows.end(); }
 
-void BaseTableIterator::insert(multi_base_types::table_row const & row) { _table->insertRow(row, _listIterator); }
+void BaseTableIterator::next() {
+	BaseTableConstIterator::next();
+	++_iter;
+}
+
+void BaseTableIterator::insert(multi_base_types::table_row const & row) { _table->insertRow(row, _iter); }
 void BaseTableIterator::update(multi_base_types::table_row const & row) {
 	if (isEnd())
 		throw EndOfTableException("BaseTable");
-	_table->updateRow(row, _listIterator);
+	_table->updateRow(row, _iter);
 }
-void BaseTableIterator::remove() { _table->removeRow(_listIterator); }
+void BaseTableIterator::remove() { _table->removeRow(_iter); }

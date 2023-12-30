@@ -20,8 +20,10 @@ public:
 	// returns a pointer to a new ITableIterator
 	// so a client has to delete it manually
 	virtual multi_base_types::iterator getIterator() = 0;
+	virtual multi_base_types::const_iterator getIterator() const = 0;
 };
 
-#include "SmartTableIterator.hpp"
+#include "TableSmartConstIterator.hpp"
+#include "TableSmartIterator.hpp"
 
 #endif

@@ -1,7 +1,7 @@
 #include "TableException.hpp"
 #include "multi_base_common_methods.hpp"
 
-void table_methods::copyTable(ITable * source, ITable * dest) {
+void table_methods::copyTable(ITable const * source, ITable * dest) {
 	auto headers = source->getHeaders();
 	if (headers != dest->getHeaders())
 		throw TableException("Tables have different headers");
@@ -17,7 +17,7 @@ void table_methods::copyTable(ITable * source, ITable * dest) {
 	}
 }
 
-void table_methods::printTable(ITable * table, std::ostream & out) {
+void table_methods::printTable(ITable const * table, std::ostream & out) {
 	auto headers = table->getHeaders();
 	for (auto iter = table->getIterator(); !iter.isEnd(); iter.next()) {
 		auto row = iter.get();
