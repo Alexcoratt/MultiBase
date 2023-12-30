@@ -4,7 +4,6 @@
 #include <list>
 
 #include "ITable.hpp"
-#include "BaseTableIterator.hpp"
 
 class BaseTable : public ITable {
 friend class BaseTableIterator;
@@ -14,9 +13,9 @@ private:
 	std::string * _headings;
 	std::list<AutoValue *> _rows;
 
-	std::map<std::string, AutoValue> getRow(std::list<AutoValue *>::iterator const &) const;
-	void insertRow(std::map<std::string, AutoValue> const &, std::list<AutoValue *>::iterator &);
-	void updateRow(const std::map<std::string, AutoValue> &row, std::list<AutoValue *>::iterator &);
+	multi_base_types::table_row getRow(std::list<AutoValue *>::iterator const &) const;
+	void insertRow(multi_base_types::table_row const &, std::list<AutoValue *>::iterator &);
+	void updateRow(const multi_base_types::table_row &row, std::list<AutoValue *>::iterator &);
 	void removeRow(std::list<AutoValue *>::iterator &);
 
 public:
@@ -31,15 +30,15 @@ public:
 	std::size_t getWidth() const override;
 	std::size_t getHeight() const override;
 
-	std::map<std::string, AutoValue> getRow(const std::size_t &index) const override;
+	multi_base_types::table_row getRow(const std::size_t &index) const override;
 
-	void insertRow(const std::map<std::string, AutoValue> &row, const std::size_t &index = 0) override;
+	void insertRow(const multi_base_types::table_row &row, const std::size_t &index = 0) override;
 
-	void appendRow(const std::map<std::string, AutoValue> &row) override;
-	void updateRow(const std::map<std::string, AutoValue> &row, const std::size_t &index) override;
+	void appendRow(const multi_base_types::table_row &row) override;
+	void updateRow(const multi_base_types::table_row &row, const std::size_t &index) override;
 	void removeRow(const std::size_t &index) override;
 
-	BaseTableIterator * getIterator() override;
+	multi_base_types::iterator getIterator() override;
 };
 
 #endif

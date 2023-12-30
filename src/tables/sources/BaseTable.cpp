@@ -4,6 +4,9 @@
 
 #include "BaseTable.hpp"
 
+#include "BaseTableIterator.hpp"
+#include "SmartTableIterator.hpp"
+
 BaseTable::BaseTable(std::vector<std::string> const & headings) {
 	_width = headings.size();
 
@@ -152,4 +155,7 @@ void BaseTable::removeRow(std::list<AutoValue *>::iterator & iter) {
 	_rows.erase(iter);
 }
 
-BaseTableIterator * BaseTable::getIterator() { return new BaseTableIterator(this); }
+multi_base_types::iterator BaseTable::getIterator() {
+	BaseTableIterator res(this);
+	return &res;
+}

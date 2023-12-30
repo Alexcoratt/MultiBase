@@ -5,7 +5,6 @@
 
 #include "ITable.hpp"
 #include "ILineParser.hpp"
-#include "CSVTableConnectionIterator.hpp"
 
 class CSVTableConnection : public ITable {
 friend class CSVTableConnectionIterator;
@@ -38,7 +37,7 @@ public:
 	void updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) override;
 	void removeRow(std::size_t const & index) override;
 
-	CSVTableConnectionIterator * getIterator() override;
+	multi_base_types::iterator getIterator() override;
 };
 
 #endif

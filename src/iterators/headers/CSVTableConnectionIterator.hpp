@@ -13,7 +13,7 @@ class CSVTableConnectionIterator : public ITableIterator {
 private:
 	CSVTableConnection * _conn;
 	std::fstream * _sourcestream;
-	std::map<std::string, AutoValue> _currentRow;
+	multi_base_types::table_row _currentRow;
 	std::size_t _currentRowIndex;
 	std::fstream::pos_type _lastPos;
 
@@ -25,13 +25,15 @@ public:
 
 	void swap(CSVTableConnectionIterator & other);
 
+	CSVTableConnectionIterator * getClone() const override;
+
 	void first() override;
 	void next() override;
-	std::map<std::string, AutoValue> get() const override;
+	multi_base_types::table_row get() const override;
 	bool isEnd() const override;
 
-	void insert(std::map<std::string, AutoValue> const &) override;
-	void update(std::map<std::string, AutoValue> const &) override;
+	void insert(multi_base_types::table_row const &) override;
+	void update(multi_base_types::table_row const &) override;
 	void remove() override;
 };
 

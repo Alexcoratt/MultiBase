@@ -24,17 +24,19 @@ void BaseTableIterator::swap(BaseTableIterator & other) {
 	std::swap(_listIterator, other._listIterator);
 }
 
+BaseTableIterator * BaseTableIterator::getClone() const { return new BaseTableIterator(*this); }
+
 void BaseTableIterator::first() { _listIterator = _table->_rows.begin(); }
 void BaseTableIterator::next() { ++_listIterator; }
-std::map<std::string, AutoValue> BaseTableIterator::get() const {
+multi_base_types::table_row BaseTableIterator::get() const {
 	if (isEnd())
 		throw EndOfTableException("BaseTable");
 	return _table->getRow(_listIterator);
 }
 bool BaseTableIterator::isEnd() const { return _listIterator == _table->_rows.end(); }
 
-void BaseTableIterator::insert(std::map<std::string, AutoValue> const & row) { _table->insertRow(row, _listIterator); }
-void BaseTableIterator::update(std::map<std::string, AutoValue> const & row) {
+void BaseTableIterator::insert(multi_base_types::table_row const & row) { _table->insertRow(row, _listIterator); }
+void BaseTableIterator::update(multi_base_types::table_row const & row) {
 	if (isEnd())
 		throw EndOfTableException("BaseTable");
 	_table->updateRow(row, _listIterator);

@@ -1,13 +1,7 @@
 #ifndef I_TABLE_HPP
 #define I_TABLE_HPP
 
-#include <map>
-#include <string>
-#include <vector>
-#include <memory>
-
-#include <AutoValue.hpp>
-#include <ITableIterator.hpp>
+#include "table_types.hpp"
 
 class ITable {
 public:
@@ -17,15 +11,17 @@ public:
 	virtual std::size_t getWidth() const = 0;
 	virtual std::size_t getHeight() const = 0;
 
-	virtual std::map<std::string, AutoValue> getRow(std::size_t const & index) const = 0;
-	virtual void insertRow(std::map<std::string, AutoValue> const & row, std::size_t const & index = 0) = 0;
-	virtual void appendRow(std::map<std::string, AutoValue> const & row) = 0;
-	virtual void updateRow(std::map<std::string, AutoValue> const & row, std::size_t const & index) = 0;
+	virtual multi_base_types::table_row getRow(std::size_t const & index) const = 0;
+	virtual void insertRow(multi_base_types::table_row const & row, std::size_t const & index = 0) = 0;
+	virtual void appendRow(multi_base_types::table_row const & row) = 0;
+	virtual void updateRow(multi_base_types::table_row const & row, std::size_t const & index) = 0;
 	virtual void removeRow(std::size_t const & index) = 0;
 
 	// returns a pointer to a new ITableIterator
 	// so a client has to delete it manually
-	virtual ITableIterator * getIterator() = 0;
+	virtual multi_base_types::iterator getIterator() = 0;
 };
+
+#include "SmartTableIterator.hpp"
 
 #endif

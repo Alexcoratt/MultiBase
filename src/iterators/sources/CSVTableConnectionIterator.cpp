@@ -38,6 +38,8 @@ void CSVTableConnectionIterator::swap(CSVTableConnectionIterator & other) {
 	std::swap(_currentRowIndex, other._currentRowIndex);
 }
 
+CSVTableConnectionIterator * CSVTableConnectionIterator::getClone() const { return new CSVTableConnectionIterator(*this); }
+
 void CSVTableConnectionIterator::first() {
 	_sourcestream->clear();
 	_sourcestream->seekg(0);
@@ -57,11 +59,11 @@ void CSVTableConnectionIterator::next() {
 	_lastPos = lp;
 }
 
-std::map<std::string, AutoValue> CSVTableConnectionIterator::get() const { return _currentRow; }
+multi_base_types::table_row CSVTableConnectionIterator::get() const { return _currentRow; }
 
 bool CSVTableConnectionIterator::isEnd() const { return _currentRow.empty(); }
 
-void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const & row) {
+void CSVTableConnectionIterator::insert(multi_base_types::table_row const & row) {
 	auto headers = _conn->getHeaders();
 	if (isEnd()) {
 		std::ofstream writer(_conn->_filename, std::ios::app);
@@ -80,22 +82,18 @@ void CSVTableConnectionIterator::insert(std::map<std::string, AutoValue> const &
 		iterCopy.next();
 	}
 
-	auto btIter = bt->getIterator();
-
 	std::fstream writer(_conn->_filename);
 	writer.seekg(_lastPos);
 	writer << _conn->_lineParser->parseReverse(headers, row) << std::endl;
 	_sourcestream->seekg(writer.tellg());
-	while (!btIter->isEnd()) {
-		writer << _conn->_lineParser->parseReverse(headers, btIter->get()) << std::endl;
-		btIter->next();
+	for (auto btIter = bt->getIterator(); !btIter.isEnd(); btIter.next()) {
+		writer << _conn->_lineParser->parseReverse(headers, btIter.get()) << std::endl;
 	}
-	delete btIter;
 	delete bt;
 	next();
 }
 
-void CSVTableConnectionIterator::update(std::map<std::string, AutoValue> const & row) {
+void CSVTableConnectionIterator::update(multi_base_types::table_row const & row) {
 	_currentRow = row;
 	_conn->updateRow(row, _currentRowIndex);
 }

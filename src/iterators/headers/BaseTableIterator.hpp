@@ -21,13 +21,15 @@ public:
 
 	void swap(BaseTableIterator & other);
 
+	BaseTableIterator * getClone() const override;
+
 	void first() override;
 	void next() override;
-	std::map<std::string, AutoValue> get() const override;
+	multi_base_types::table_row get() const override;
 	bool isEnd() const override;
 
-	void insert(std::map<std::string, AutoValue> const &) override;
-	void update(std::map<std::string, AutoValue> const &) override;
+	void insert(multi_base_types::table_row const &) override;
+	void update(multi_base_types::table_row const &) override;
 	void remove() override;
 };
 

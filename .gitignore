@@ -6,3 +6,9 @@ build*
 
 # temporary drawio files
 *.$*
+
+# all test data
+testdata
+
+# macos files
+*.DS_Store

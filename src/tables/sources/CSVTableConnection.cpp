@@ -7,6 +7,9 @@
 #include "TableException.hpp"
 #include "EndOfTableException.hpp"
 
+#include "CSVTableConnectionIterator.hpp"
+#include "SmartTableIterator.hpp"
+
 #include "split_string.h"
 
 #include "UnableToConnectException.hpp"
@@ -88,12 +91,9 @@ CSVTableConnection CSVTableConnection::createTable(std::string const & filename,
 CSVTableConnection CSVTableConnection::createTable(std::string const & filename, ITable * table, ILineParser * lineParser) {
 	CSVTableConnection res = createTable(filename, table->getHeaders(), lineParser);
 
-	auto iter = table->getIterator();
-	while (!iter->isEnd()) {
-		res.appendRow(iter->get());
-		iter->next();
+	for (auto iter = table->getIterator(); !iter.isEnd(); iter.next()) {
+		res.appendRow(iter.get());
 	}
-	delete iter;
 
 	return res;
 }
@@ -166,6 +166,7 @@ void CSVTableConnection::removeRow(std::size_t const & index) {
 	throw std::runtime_error("CSVTableConnection::removeRow: coming soon");
 }
 
-CSVTableConnectionIterator * CSVTableConnection::getIterator() {
-	return new CSVTableConnectionIterator(this);
+multi_base_types::iterator CSVTableConnection::getIterator() {
+	CSVTableConnectionIterator res(this);
+	return &res;
 }
